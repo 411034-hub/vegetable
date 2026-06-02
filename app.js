@@ -1,5 +1,5 @@
 (() => {
-  const { createApp, reactive, computed } = Vue
+  const { createApp, reactive, computed, toRefs } = Vue
   const STORAGE_KEY = 'vocab_app_v1'
 
   function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -93,12 +93,7 @@
       }
 
       return {
-        view: state.view,
-        items: state.items,
-        index: state.index,
-        flipped: state.flipped,
-        form: state.form,
-        manageSearch: state.manageSearch,
+        ...toRefs(state),
         currentItem,
         filtered,
         nextCard, prevCard, shuffle, flipCard, resetForm, saveWord, editWord, deleteWord, toggleFavorite, autoFill

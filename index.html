@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>背單字 - 簡易卡片學習</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="純前端背單字範例（使用 Vue 3 CDN）">
+  </head>
+  <body>
+    <div id="app">
+      <header class="site-header">
+        <h1>背單字卡</h1>
+        <nav class="nav">
+          <button :class="{active:view==='study'}" @click="view='study'">學習</button>
+          <button :class="{active:view==='manage'}" @click="view='manage'">管理詞庫</button>
+        </nav>
+      </header>
+
+      <main class="container">
+        <!-- 學習頁面 -->
+        <section v-if="view==='study'" class="study">
+          <div class="card-wrap">
+            <div class="card" :class="{flipped:flipped}" @click="flipCard">
+              <div class="face front">
+                <div class="word">{{ currentItem ? currentItem.word : '無字詞' }}</div>
+              </div>
+              <div class="face back">
+                <div class="back-title">{{ currentItem ? currentItem.word : '' }}</div>
+                <div class="back-content">
+                  <p><strong>翻譯：</strong>{{ currentItem?.translation || '—' }}</p>
+                  <p><strong>詞性：</strong>{{ currentItem?.pos || '—' }}</p>
+                  <p><strong>例句：</strong><span class="muted">{{ currentItem?.example || '—' }}</span></p>
+                  <p><strong>字根分析：</strong><span class="muted">{{ currentItem?.root || '—' }}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls study-controls">
+            <button @click="prevCard">上一張</button>
+            <button @click="nextCard">下一張</button>
+            <button @click="shuffle">隨機</button>
+            <button @click="toggleFavorite(currentItem)" :disabled="!currentItem">{{ currentItem && currentItem.favorite ? '取消喜愛' : '標記喜愛' }}</button>
+          </div>
+        </section>
+
+        <!-- 管理頁面 -->
+        <section v-if="view==='manage'" class="manage">
+          <form @submit.prevent="saveWord" class="manage-form">
+            <div class="grid">
+              <input v-model="form.word" placeholder="英文單字" required />
+              <input v-model="form.translation" placeholder="翻譯（中文）" />
+              <input v-model="form.pos" placeholder="詞性（part of speech）" />
+              <input v-model="form.example" placeholder="例句（英文）" />
+              <input v-model="form.root" placeholder="字根分析" />
+            </div>
+            <div class="form-actions">
+              <button type="submit">儲存</button>
+              <button type="button" @click="resetForm">清除</button>
+              <button type="button" @click="autoFill" class="accent">自動填入</button>
+            </div>
+          </form>
+
+          <div class="manage-list">
+            <input v-model="manageSearch" placeholder="搜尋單字..." />
+            <div class="list">
+              <div v-for="item in filtered" :key="item.id" class="card small">
+                <div class="title">{{ item.word }}</div>
+                <div class="meta">{{ item.translation }} • {{ item.pos }}</div>
+                <div class="row">
+                  <button @click="editWord(item)" class="btn small">編輯</button>
+                  <button @click="deleteWord(item)" class="btn small">刪除</button>
+                  <div class="spacer"></div>
+                  <button @click="toggleFavorite(item)" class="btn small">{{ item.favorite ? '★' : '☆' }}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">純前端示範（Vue 3 CDN）</footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="app.js" defer></script>
+  </body>
+</html>
